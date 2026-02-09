@@ -1,0 +1,26 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v0.2",
+  "subject": [
+    {
+      "name": "myapp-linux-amd64",
+      "digest": {
+        "sha256": "abc123def456789"
+      }
+    }
+  ],
+  "predicate": {
+    "builder": {
+      "id": "https://github.com/actions/runner"
+    },
+    "buildType": "https://github.com/actions/workflow",
+    "materials": [
+      {
+        "uri": "git+https://github.com/example/repo@refs/heads/main",
+        "digest": {
+          "sha1": "abc123"
+        }
+      }
+    ]
+  }
+}

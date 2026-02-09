@@ -1,0 +1,12 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v0.2",
+  "subject": [],
+  "predicate": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "",
+    "materials": []
+  }
+}
