@@ -30,17 +30,17 @@ var provenanceFilePatterns = []string{
 
 // buildConfigFiles lists files that describe build processes.
 var buildConfigFiles = map[string]bool{
-	"Makefile":               true,
-	"Dockerfile":             true,
-	"Jenkinsfile":            true,
-	"Taskfile.yml":           true,
-	"cloudbuild.yaml":        true,
-	"cloudbuild.json":        true,
-	".goreleaser.yml":        true,
-	".goreleaser.yaml":       true,
-	"build.gradle":           true,
-	"build.gradle.kts":       true,
-	"pom.xml":                true,
+	"Makefile":         true,
+	"Dockerfile":       true,
+	"Jenkinsfile":      true,
+	"Taskfile.yml":     true,
+	"cloudbuild.yaml":  true,
+	"cloudbuild.json":  true,
+	".goreleaser.yml":  true,
+	".goreleaser.yaml": true,
+	"build.gradle":     true,
+	"build.gradle.kts": true,
+	"pom.xml":          true,
 }
 
 // ciConfigPatterns lists CI configuration file patterns.
@@ -60,7 +60,7 @@ var nonDeterministicPatterns = []struct {
 }{
 	{regexp.MustCompile(`(?i)\bcurl\b.*\|\s*(sh|bash)\b`), "Piping remote script to shell is non-reproducible"},
 	{regexp.MustCompile(`(?i)\bwget\b.*\|\s*(sh|bash)\b`), "Piping remote script to shell is non-reproducible"},
-	{regexp.MustCompile(`(?i)\b(apt-get|apk|yum)\s+install\b(?!.*=)`), "Package install without version pinning"},
+	{regexp.MustCompile(`(?i)\b(apt-get|apk|yum)\s+install\s+[a-zA-Z][a-zA-Z0-9._-]*\s*$`), "Package install without version pinning"},
 	{regexp.MustCompile(`(?i)\blatest\b`), "Using 'latest' tag is non-deterministic"},
 	{regexp.MustCompile(`(?i)\bDATE\b|\bdate\s*\(`), "Embedding build date makes output non-reproducible"},
 	{regexp.MustCompile(`(?i)\bRANDOM\b|\brand\(`), "Random values in build produce non-deterministic output"},
@@ -285,7 +285,7 @@ func scanBuildFileForReproducibility(resp *sdk.ResponseBuilder, filePath string)
 	if err != nil {
 		return nil
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	scanner := bufio.NewScanner(f)
 	lineNum := 0
@@ -313,12 +313,17 @@ func scanBuildFileForReproducibility(resp *sdk.ResponseBuilder, filePath string)
 }
 
 func main() {
+	os.Exit(run())
+}
+
+func run() int {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	srv := buildServer()
 	if err := srv.Serve(ctx); err != nil {
 		fmt.Fprintf(os.Stderr, "nox-plugin-provenance: %v\n", err)
-		os.Exit(1)
+		return 1
 	}
+	return 0
 }

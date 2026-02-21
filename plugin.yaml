@@ -1,0 +1,7 @@
+name: nox-plugin-provenance
+version: 0.1.0
+track: supply-chain
+description: SLSA provenance and in-toto attestation verification for build artifacts
+tools:
+  - name: scan
+    description: Scan for missing or incomplete SLSA attestations and provenance metadata
